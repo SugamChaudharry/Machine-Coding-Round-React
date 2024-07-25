@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import {createBrowserRouter, RouterProvider} from 'react-router-dom'
+import {createBrowserRouter, RouterProvider, Navigate} from 'react-router-dom'
 import App from './App.jsx'
 import {OtpForm,CourseList,Batches} from './pages/index.js'
 import './index.css'
@@ -11,7 +11,7 @@ const router = createBrowserRouter([
     children:[
       {
         path:"/",
-        element: <OtpForm />
+        element: <Navigate to="/otp-form" />
       },
       {
         path:"/otp-form",
