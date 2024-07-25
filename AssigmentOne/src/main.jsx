@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client'
 import {createBrowserRouter, RouterProvider} from 'react-router-dom'
 import App from './App.jsx'
 import {OtpForm,CourseList,Batches} from './pages/index.js'
-import { DragDropContext } from 'react-beautiful-dnd';
 import './index.css'
 const router = createBrowserRouter([
   {
