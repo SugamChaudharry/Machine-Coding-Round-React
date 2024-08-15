@@ -7,6 +7,11 @@ function Batches() {
   const [searchPram, setSearchPram] = useState("");
   const itemsPerPage = 3;
 
+  const handleSetSearchPram = (value) => {
+    setPageNo(1)
+    setSearchPram(value)
+  }
+
   const filteredData = data.filter((d) => {
     if (searchPram.length === 0) {
       return true;
@@ -46,7 +51,7 @@ function Batches() {
             type="text"
             placeholder="Search by Title"
             className="w-[340px] h-[43px] flex p-4 border-2 border-black"
-            onChange={(e) => setSearchPram(e.target.value)}
+            onChange={(e) => handleSetSearchPram(e.target.value)}
             value={searchPram}
             aria-keyshortcuts="alt+k"
           />
