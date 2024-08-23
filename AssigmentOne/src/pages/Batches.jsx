@@ -1,33 +1,51 @@
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { BatchData } from "../data/batch";
 
+function useDebounce(input,time){
+  const [returnInput,setReturnInput] = useState(input)
+  useEffect(()=>{
+    const ref = setTimeout(()=>{
+      setReturnInput(input)
+    },time)
+    return ()=>{
+      clearTimeout(ref)
+    }
+  },[input,time])
+  return  returnInput
+}
 function Batches() {
   const [data, setData] = useState(BatchData);
   const [pageNo, setPageNo] = useState(1);
-  const [searchPram, setSearchPram] = useState("");
+  const [searchParam, setSearchParam] = useState("");
+  const deBouncevalue = useDebounce(searchParam,500)
+
   const itemsPerPage = 3;
 
-  const handleSetSearchPram = (value) => {
+  const handleSetSearchParam = useCallback((value) => {
     setPageNo(1)
-    setSearchPram(value)
+    setSearchParam(value)
+  },[])
+
+  const filteredData = useMemo(()=>{
+    return data.filter((d) => {
+      if (deBouncevalue.length === 0) {
+        return true;
+      } else {
+        const title = d.title;
+        return title.toLowerCase().includes(deBouncevalue.toLowerCase());
+      }
+    })
+  },[data,deBouncevalue])
+
+  const totalPages = useMemo(()=>{
+    return Math.ceil(filteredData.length / itemsPerPage)
+  },[filteredData])
+
+  const handlePageNo = useCallback((value) => {
+  if (value > 0 && value <= totalPages) {
+    setPageNo(value);
   }
-
-  const filteredData = data.filter((d) => {
-    if (searchPram.length === 0) {
-      return true;
-    } else {
-      const title = d.title;
-      return title.toLowerCase().includes(searchPram.toLowerCase());
-    }
-  });
-
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-
-  const hendlePageNo = (value) => {
-    if (!(value > totalPages) && !(value <= 0)) {
-      setPageNo(value);
-    }
-  };
+}, [totalPages]);
 
   const hendleSumbit = (e) => {
     e.preventDefault();
@@ -51,8 +69,8 @@ function Batches() {
             type="text"
             placeholder="Search by Title"
             className="w-[340px] h-[43px] flex p-4 border-2 border-black"
-            onChange={(e) => handleSetSearchPram(e.target.value)}
-            value={searchPram}
+            onChange={(e) => handleSetSearchParam(e.target.value)}
+            value={searchParam}
             aria-keyshortcuts="alt+k"
           />
           <button className="w-[116px] h-[43px] rounded-md bg-[#6c6baf] text-white">
@@ -108,7 +126,7 @@ function Batches() {
           <p>Row per page </p>
           <div className="flex  w-[73px] h-[43px] border-2">
             <select
-              onChange={(e) => hendlePageNo(Number(e.target.value))}
+              onChange={(e) => handlePageNo(Number(e.target.value))}
               className="w-full bg-white outline-none flex text-center justify-center"
             >
               {[...Array(totalPages).keys()].map((_, index) => (
@@ -124,8 +142,8 @@ function Batches() {
             </select>
           </div>
           <div className="flex w-[90px]">
-            <img src="./src/assets/left.svg" alt="" className=" w-[35px]" onClick={() => hendlePageNo(pageNo - 1)} />
-            <img src="./src/assets/right.svg" alt="" className=" w-[35px]" onClick={() => hendlePageNo(pageNo + 1)} />
+            <img src="./src/assets/left.svg" alt="" className=" w-[35px]" onClick={() => handlePageNo(pageNo - 1)} />
+            <img src="./src/assets/right.svg" alt="" className=" w-[35px]" onClick={() => handlePageNo(pageNo + 1)} />
           </div>
         </div>
       </div>
